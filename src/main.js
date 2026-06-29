@@ -27,6 +27,7 @@ function setPage(html) {
       el.classList.add("is-visible");
     });
     initBeforeAfter();
+    initAtlasMap();
   });
 }
 
@@ -242,19 +243,64 @@ function mapSection(expanded = false) {
         <p class="kicker mono">MAP STUDY</p>
         <h2>Nine coordinates, nine forms of aftermath.</h2>
       </div>
-      <div class="map-board ${expanded ? "expanded" : ""}">
+      <div class="map-board ${expanded ? "expanded" : ""}" data-atlas-map>
+        <div class="map-toolbar" aria-hidden="true">
+          <div class="map-search">
+            <span class="mono">Afterimage Atlas</span>
+            <strong>United States field map</strong>
+          </div>
+          <div class="map-layers">
+            <span>Terrain</span>
+            <span>Archive</span>
+            <span>Satellite</span>
+          </div>
+        </div>
+        <div class="map-controls" aria-hidden="true">
+          <span>+</span>
+          <span>-</span>
+        </div>
+        <div class="map-scale mono" aria-hidden="true">250 mi</div>
+        <div class="map-land" aria-hidden="true">
+          <span class="state-label label-nm">New Mexico</span>
+          <span class="state-label label-mo">Missouri</span>
+          <span class="state-label label-tn">Tennessee</span>
+          <span class="state-label label-nc">North Carolina</span>
+          <span class="state-label label-ny">New York</span>
+          <span class="road road-west"></span>
+          <span class="road road-southwest"></span>
+          <span class="road road-midwest"></span>
+          <span class="road road-appalachia"></span>
+          <span class="road road-northeast"></span>
+          <span class="river river-east"></span>
+          <span class="river river-west"></span>
+        </div>
         ${places
           .map((place) => {
             const x = ((place.coordinates.lng + 125) / 59) * 100;
             const y = ((49 - place.coordinates.lat) / 24) * 100;
             return `
-              <a class="pin ${place.color}" style="left:${x}%; top:${y}%;" href="#/places/${place.slug}" aria-label="${place.title}, ${place.state}">
+              <a
+                class="pin pin-${place.slug} ${place.color}"
+                style="--x:${x}%; --y:${y}%;"
+                href="#/places/${place.slug}"
+                aria-label="${place.title}, ${place.state}"
+                data-map-pin
+              >
                 <span></span>
                 <small>${place.title}</small>
+                <em>
+                  <b>${place.title}, ${place.state}</b>
+                  <i>${place.disaster} / ${place.year}</i>
+                </em>
               </a>
             `;
           })
           .join("")}
+        <div class="map-info" data-map-info>
+          <p class="mono">Selected Field Entry</p>
+          <strong>Hover a pin</strong>
+          <span>Each marker opens a documentary place page.</span>
+        </div>
       </div>
     </section>
   `;
@@ -371,6 +417,43 @@ function initBeforeAfter() {
     };
     slider.addEventListener("input", update);
     update();
+  });
+}
+
+function initAtlasMap() {
+  document.querySelectorAll("[data-atlas-map]").forEach((map) => {
+    const info = map.querySelector("[data-map-info]");
+    if (!info) return;
+
+    const reset = () => {
+      info.innerHTML = `
+        <p class="mono">Selected Field Entry</p>
+        <strong>Hover a pin</strong>
+        <span>Each marker opens a documentary place page.</span>
+      `;
+    };
+
+    map.querySelectorAll("[data-map-pin]").forEach((pin) => {
+      const place = places.find((item) => pin.getAttribute("href") === `#/places/${item.slug}`);
+      if (!place) return;
+
+      const show = () => {
+        info.innerHTML = `
+          <p class="mono">${place.state} / ${place.year}</p>
+          <strong>${place.title}</strong>
+          <span>${place.disaster}</span>
+        `;
+      };
+
+      pin.addEventListener("mouseenter", show);
+      pin.addEventListener("mouseover", show);
+      pin.addEventListener("pointerenter", show);
+      pin.addEventListener("pointerover", show);
+      pin.addEventListener("focus", show);
+      pin.addEventListener("mouseleave", reset);
+      pin.addEventListener("pointerleave", reset);
+      pin.addEventListener("blur", reset);
+    });
   });
 }
 
