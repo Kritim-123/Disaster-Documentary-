@@ -1,4 +1,4 @@
-import { hydratePlace, places } from "./data/places.js?v=20260629b";
+import { hydratePlace, places } from "./data/places.js?v=20260630a";
 
 const app = document.querySelector("#app");
 const featuredSlugs = ["joplin-missouri", "church-rock-new-mexico", "gatlinburg-tennessee"];
@@ -125,6 +125,7 @@ function renderPlace(slug) {
         ${beforeAfter(place)}
       </section>
       ${storySection("The After", place.afterText, place.afterImage)}
+      ${fieldEvidence(place)}
       <section class="story-section timeline-wrap reveal">
         <div>
           <p class="kicker mono">TIMELINE</p>
@@ -174,7 +175,8 @@ function renderSources() {
     const hydrated = hydratePlace(place);
     return [
       { place: `${hydrated.title}, ${hydrated.state}`, image: hydrated.beforeImage },
-      { place: `${hydrated.title}, ${hydrated.state}`, image: hydrated.afterImage }
+      { place: `${hydrated.title}, ${hydrated.state}`, image: hydrated.afterImage },
+      ...(hydrated.galleryImages || []).map((image) => ({ place: `${hydrated.title}, ${hydrated.state}`, image }))
     ];
   });
 
@@ -366,6 +368,33 @@ function beforeAfter(place) {
       </div>
       <figcaption>${place.afterImage.caption} <span class="mono">${place.afterImage.source} / ${place.afterImage.license}</span></figcaption>
     </figure>
+  `;
+}
+
+function fieldEvidence(place) {
+  if (!place.galleryImages?.length) return "";
+  return `
+    <section class="field-evidence reveal">
+      <div class="section-heading">
+        <p class="kicker mono">FIELD EVIDENCE</p>
+        <h2>Images from the archive folder.</h2>
+      </div>
+      <div class="evidence-grid">
+        ${place.galleryImages
+          .map(
+            (image) => `
+              <figure class="evidence-card">
+                ${imageMarkup(image)}
+                <figcaption>
+                  <strong>${image.title}</strong>
+                  <span>${image.caption}</span>
+                </figcaption>
+              </figure>
+            `
+          )
+          .join("")}
+      </div>
+    </section>
   `;
 }
 
