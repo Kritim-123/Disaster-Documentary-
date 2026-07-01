@@ -861,16 +861,64 @@ dd {
 
 .source-list {
   display: grid;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .source-row {
   display: grid;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .source-row h2 {
   font-size: clamp(1.6rem, 4vw, 3rem);
+}
+
+.source-row-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.source-place-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(233, 223, 200, 0.28);
+  color: var(--paper);
+  text-decoration: none;
+  white-space: nowrap;
+  background: rgba(5, 5, 5, 0.26);
+}
+
+.source-place-link:hover {
+  background: rgba(233, 223, 200, 0.08);
+}
+
+.source-credit-list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid rgba(233, 223, 200, 0.12);
+  list-style: none;
+}
+
+.source-credit-list li {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.45fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.source-credit-list strong {
+  color: rgba(233, 223, 200, 0.92);
+  font-weight: 500;
+}
+
+.source-credit-list span {
+  color: rgba(233, 223, 200, 0.62);
+  font-size: 0.88rem;
 }
 
 .placeholder-media,

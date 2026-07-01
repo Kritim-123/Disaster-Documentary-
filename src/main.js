@@ -1,4 +1,4 @@
-import { hydratePlace, places } from "./data/places.js?v=20260630a";
+import { hydratePlace, places } from "./data/places.js?v=20260630b";
 
 const app = document.querySelector("#app");
 const featuredSlugs = ["joplin-missouri", "church-rock-new-mexico", "gatlinburg-tennessee"];
@@ -171,32 +171,48 @@ function renderAbout() {
 }
 
 function renderSources() {
-  const allImages = places.flatMap((place) => {
+  const sourceGroups = places.map((place) => {
     const hydrated = hydratePlace(place);
-    return [
-      { place: `${hydrated.title}, ${hydrated.state}`, image: hydrated.beforeImage },
-      { place: `${hydrated.title}, ${hydrated.state}`, image: hydrated.afterImage },
-      ...(hydrated.galleryImages || []).map((image) => ({ place: `${hydrated.title}, ${hydrated.state}`, image }))
-    ];
+    const images = [hydrated.beforeImage, hydrated.afterImage, ...(hydrated.galleryImages || [])];
+    const uniqueImages = images.filter(
+      (image, index, list) => list.findIndex((item) => item.title === image.title && item.url === image.url) === index
+    );
+
+    return { place: hydrated, images: uniqueImages };
   });
 
   setPage(`
     <section class="page-title reveal">
       <p class="kicker mono">SOURCES & IMAGE CREDITS</p>
       <h1>Archive Ledger</h1>
-      <p>Image credits are treated as part of the exhibit. Placeholder records are clearly marked until final public-domain or openly licensed media is selected.</p>
+      <p>Image credits are grouped by location so the ledger stays readable. Each location has one link back to its place page.</p>
     </section>
     <section class="section">
       <div class="source-list">
-        ${allImages
+        ${sourceGroups
           .map(
-            ({ place, image }) => `
+            ({ place, images }) => `
               <article class="source-row reveal">
-                <p class="mono">${place}</p>
-                <h2>${image.title}</h2>
-                <p>${image.caption}</p>
-                <p><strong>Source:</strong> ${image.source} · <strong>License:</strong> ${image.license} · <strong>Photographer/Agency:</strong> ${image.photographer}</p>
-                <a href="${image.originalUrl}" target="_blank" rel="noreferrer">${image.placeholder ? "Placeholder record" : "Original URL"}</a>
+                <div class="source-row-main">
+                  <div>
+                    <p class="mono">${place.state} / ${place.year}</p>
+                    <h2>${place.title}, ${place.state}</h2>
+                    <p>${place.disaster}</p>
+                  </div>
+                  <a class="source-place-link" href="#/places/${place.slug}">Open place page</a>
+                </div>
+                <ul class="source-credit-list">
+                  ${images
+                    .map(
+                      (image) => `
+                        <li>
+                          <strong>${image.title}</strong>
+                          <span>${image.source} · ${image.license} · ${image.photographer}</span>
+                        </li>
+                      `
+                    )
+                    .join("")}
+                </ul>
               </article>
             `
           )
