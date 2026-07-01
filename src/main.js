@@ -1,4 +1,4 @@
-import { hydratePlace, places } from "./data/places.js?v=20260630b";
+import { hydratePlace, places } from "./data/places.js?v=20260630c";
 
 const app = document.querySelector("#app");
 const featuredSlugs = ["joplin-missouri", "church-rock-new-mexico", "gatlinburg-tennessee"];
@@ -171,48 +171,29 @@ function renderAbout() {
 }
 
 function renderSources() {
-  const sourceGroups = places.map((place) => {
-    const hydrated = hydratePlace(place);
-    const images = [hydrated.beforeImage, hydrated.afterImage, ...(hydrated.galleryImages || [])];
-    const uniqueImages = images.filter(
-      (image, index, list) => list.findIndex((item) => item.title === image.title && item.url === image.url) === index
-    );
-
-    return { place: hydrated, images: uniqueImages };
-  });
+  const sourceGroups = places.map((place) => hydratePlace(place));
 
   setPage(`
     <section class="page-title reveal">
       <p class="kicker mono">SOURCES & IMAGE CREDITS</p>
       <h1>Archive Ledger</h1>
-      <p>Image credits are grouped by location so the ledger stays readable. Each location has one link back to its place page.</p>
+      <p>Image folders are grouped by location. Each entry represents one site archive folder and links back to that place page.</p>
     </section>
     <section class="section">
       <div class="source-list">
         ${sourceGroups
           .map(
-            ({ place, images }) => `
+            (place) => `
               <article class="source-row reveal">
                 <div class="source-row-main">
                   <div>
                     <p class="mono">${place.state} / ${place.year}</p>
                     <h2>${place.title}, ${place.state}</h2>
                     <p>${place.disaster}</p>
+                    <p class="source-folder-note">Folder-level archive entry. Image context and credits are held with the project source materials.</p>
                   </div>
                   <a class="source-place-link" href="#/places/${place.slug}">Open place page</a>
                 </div>
-                <ul class="source-credit-list">
-                  ${images
-                    .map(
-                      (image) => `
-                        <li>
-                          <strong>${image.title}</strong>
-                          <span>${image.source} · ${image.license} · ${image.photographer}</span>
-                        </li>
-                      `
-                    )
-                    .join("")}
-                </ul>
               </article>
             `
           )

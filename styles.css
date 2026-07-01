@@ -896,27 +896,8 @@ dd {
   background: rgba(233, 223, 200, 0.08);
 }
 
-.source-credit-list {
-  display: grid;
-  gap: 0.55rem;
-  margin: 0;
-  padding: 1rem 0 0;
-  border-top: 1px solid rgba(233, 223, 200, 0.12);
-  list-style: none;
-}
-
-.source-credit-list li {
-  display: grid;
-  grid-template-columns: minmax(12rem, 0.45fr) minmax(0, 1fr);
-  gap: 1rem;
-}
-
-.source-credit-list strong {
-  color: rgba(233, 223, 200, 0.92);
-  font-weight: 500;
-}
-
-.source-credit-list span {
+.source-folder-note {
+  margin-top: 0.55rem;
   color: rgba(233, 223, 200, 0.62);
   font-size: 0.88rem;
 }
